@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
-import { Video, MessageCircle, UserPlus, Users, Share2, Sparkles } from 'lucide-react';
+import React, { useState } from 'react';
+import { Video, MessageCircle, UserPlus, Users, Share2, Sparkles, Loader2 } from 'lucide-react';
 import { Friend } from '@/lib/types';
+import { seedDemoUsersInDb } from '@/lib/firestore-service';
 
 interface SidebarRightProps {
   friends: Friend[];
@@ -15,8 +16,20 @@ export const SidebarRight: React.FC<SidebarRightProps> = ({
   onStartVideoCallWithFriend,
   onOpenChatWithFriend,
 }) => {
+  const [isSeeding, setIsSeeding] = useState(false);
   const onlineFriends = friends.filter((f) => f.isOnline);
   const offlineFriends = friends.filter((f) => !f.isOnline);
+
+  const handleSeedUsers = async () => {
+    setIsSeeding(true);
+    try {
+      await seedDemoUsersInDb();
+    } catch (err) {
+      console.error('Erro ao adicionar usuários de teste:', err);
+    } finally {
+      setIsSeeding(false);
+    }
+  };
 
   return (
     <aside className="hidden xl:flex flex-col w-72 2xl:w-80 p-2 shrink-0 overflow-y-auto max-h-[calc(100vh-3.5rem)] sticky top-14 select-none">
@@ -52,11 +65,37 @@ export const SidebarRight: React.FC<SidebarRightProps> = ({
 
       {/* Friends list or empty state */}
       {friends.length === 0 ? (
-        <div className="p-4 bg-white rounded-xl border border-[#E4E6EB] text-center space-y-2">
-          <Users className="w-8 h-8 text-[#CCD0D5] mx-auto" />
-          <p className="text-xs font-semibold text-[#050505]">Nenhum outro usuário logado ainda</p>
-          <p className="text-[11px] text-[#65676B] leading-relaxed">
-            Abra o app em uma <strong>nova aba</strong> ou janela anônima para testar chat e chamadas de vídeo ao vivo entre duas pessoas reais!
+        <div className="p-4 bg-white rounded-xl border border-[#E4E6EB] text-center space-y-3 shadow-2xs">
+          <div className="w-10 h-10 rounded-full bg-blue-50 text-[#1877F2] flex items-center justify-center mx-auto">
+            <Users className="w-5 h-5" />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-[#050505]">Você é o primeiro membro online!</p>
+            <p className="text-[11px] text-[#65676B] leading-relaxed mt-1">
+              Outros usuários aparecerão aqui assim que fizerem login. Ou você pode adicionar contatos demonstrativos para testar o bate-papo e vídeo chamadas.
+            </p>
+          </div>
+
+          <button
+            onClick={handleSeedUsers}
+            disabled={isSeeding}
+            className="w-full py-2 px-3 bg-[#1877F2] hover:bg-blue-600 active:scale-98 text-white rounded-lg text-xs font-bold transition-all shadow-xs flex items-center justify-center gap-2"
+          >
+            {isSeeding ? (
+              <>
+                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                <span>Gerando contatos...</span>
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Adicionar Contatos Demo &amp; IA</span>
+              </>
+            )}
+          </button>
+
+          <p className="text-[10px] text-slate-400">
+            Dica: você também pode abrir o app em uma <strong>janela anônima</strong> para simular 2 pessoas reais conversando!
           </p>
         </div>
       ) : (

@@ -556,6 +556,30 @@ export default function ConectaFlowHome() {
         targetId: recipientFriendId,
         targetType: 'message',
       });
+
+      // ConectaBot Auto-Reply for instant interactive feedback
+      if (recipientFriendId === 'conectabot-ia') {
+        setTimeout(async () => {
+          const replies = [
+            `Olá ${currentUser.name}! Sou o ConectaBot IA 🤖. Recebi sua mensagem: "${text.trim()}". Como posso ajudar você a testar o ConectaFlow hoje?`,
+            `Oi ${currentUser.name}! O sincronismo em tempo real com Firebase Firestore está ativo. Se você quiser testar uma chamada de vídeo de demonstração, clique no botão da câmera no topo do bate-papo! 📹`,
+            `Sensacional! Você sabia que também pode criar comunidades, compartilhar projetos no Hub GitHub.io e fazer denúncias de moderação no ConectaFlow? 🚀`,
+          ];
+          const replyText = replies[Math.floor(Math.random() * replies.length)];
+          const replyTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+          try {
+            await sendMessageInDb({
+              senderId: 'conectabot-ia',
+              receiverId: currentUser.id,
+              text: replyText,
+              timestamp: replyTimestamp,
+            });
+          } catch (e) {
+            console.error('Error sending bot auto-reply:', e);
+          }
+        }, 1000);
+      }
     } catch (err) {
       console.error('Error sending message:', err);
     }

@@ -16,11 +16,14 @@ import {
   Paperclip,
   UploadCloud,
   Loader2,
+  Sparkles,
+  Users,
   X
 } from 'lucide-react';
 import { Friend, Message, User, Attachment } from '@/lib/types';
 import { processUploadedFile } from '@/lib/attachment-utils';
 import { AttachmentView } from './AttachmentView';
+import { seedDemoUsersInDb } from '@/lib/firestore-service';
 
 interface ChatViewProps {
   currentUser: User;
@@ -48,9 +51,21 @@ export const ChatView: React.FC<ChatViewProps> = ({
   const [pendingAttachments, setPendingAttachments] = useState<Attachment[]>([]);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isDraggingOver, setIsDraggingOver] = useState(false);
+  const [isSeeding, setIsSeeding] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const imageInputRef = useRef<HTMLInputElement>(null);
+
+  const handleSeedUsers = async () => {
+    setIsSeeding(true);
+    try {
+      await seedDemoUsersInDb();
+    } catch (err) {
+      console.error('Erro ao gerar contatos:', err);
+    } finally {
+      setIsSeeding(false);
+    }
+  };
 
   const activeFriend = friends.find((f) => f.id === activeFriendId) || friends[0];
   const activeConversation = (activeFriend && messages[activeFriend.id]) || [];
@@ -180,11 +195,31 @@ export const ChatView: React.FC<ChatViewProps> = ({
         {/* Friends Conversations List */}
         <div className="flex-1 overflow-y-auto divide-y divide-[#F0F2F5]">
           {filteredFriends.length === 0 ? (
-            <div className="p-6 text-center text-[#65676B] text-xs space-y-2">
-              <p className="font-semibold text-[#050505]">Nenhum outro contato encontrado</p>
+            <div className="p-6 text-center text-[#65676B] text-xs space-y-3">
+              <div className="w-10 h-10 rounded-full bg-blue-50 text-[#1877F2] flex items-center justify-center mx-auto">
+                <Users className="w-5 h-5" />
+              </div>
+              <p className="font-bold text-[#050505]">Nenhum contato ativo no momento</p>
               <p className="leading-relaxed">
-                Assim que outros usuários entrarem no ConectaFlow (via Google ou Anônimo), eles aparecerão aqui para conversar em tempo real.
+                Você é o único membro online. Adicione contatos demonstrativos (incluindo o ConectaBot IA) para experimentar as conversas em tempo real!
               </p>
+              <button
+                onClick={handleSeedUsers}
+                disabled={isSeeding}
+                className="w-full py-2 px-3 bg-[#1877F2] hover:bg-blue-600 text-white font-bold rounded-xl text-xs flex items-center justify-center gap-2 transition-all shadow-xs"
+              >
+                {isSeeding ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Adicionando...</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>Gerar Contatos de Teste</span>
+                  </>
+                )}
+              </button>
             </div>
           ) : (
             filteredFriends.map((friend) => {

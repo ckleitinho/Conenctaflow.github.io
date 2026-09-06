@@ -1,24 +1,37 @@
 import type {Metadata} from 'next';
+import { Plus_Jakarta_Sans, Outfit } from 'next/font/google';
 import './globals.css'; // Global styles
+
+const plusJakartaSans = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  variable: '--font-sans',
+  display: 'swap',
+});
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  variable: '--font-display',
+  display: 'swap',
+});
 
 export const metadata: Metadata = {
   title: 'ConectaFlow - Rede Social & Vídeo Chamadas em Tempo Real',
-  description: 'Rede social completa com feed dinâmico, grupos, mensagens privadas e chamadas de vídeo em tempo real.',
+  description: 'Rede social completa com feed dinâmico, grupos, mensagens privadas, chamadas de vídeo HD e hub github.io em tempo real.',
   openGraph: {
     title: 'ConectaFlow - Rede Social & Vídeo Chamadas em Tempo Real',
-    description: 'Rede social completa com feed dinâmico, grupos, mensagens privadas e chamadas de vídeo em tempo real.',
+    description: 'Rede social completa com feed dinâmico, grupos, mensagens privadas, chamadas de vídeo HD e hub github.io em tempo real.',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'ConectaFlow - Rede Social & Vídeo Chamadas em Tempo Real',
-    description: 'Rede social completa com feed dinâmico, grupos, mensagens privadas e chamadas de vídeo em tempo real.',
+    description: 'Rede social completa com feed dinâmico, grupos, mensagens privadas, chamadas de vídeo HD e hub github.io em tempo real.',
   },
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className={`scroll-smooth ${plusJakartaSans.variable} ${outfit.variable}`}>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -63,7 +76,7 @@ export default function RootLayout({children}: {children: React.ReactNode}) {
           }}
         />
       </head>
-      <body suppressHydrationWarning className="bg-[#F0F2F5] text-[#050505] antialiased min-h-screen">
+      <body suppressHydrationWarning className="bg-[#F8FAFC] text-[#0F172A] antialiased min-h-screen font-sans">
         {children}
       </body>
     </html>

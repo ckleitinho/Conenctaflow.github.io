@@ -542,3 +542,54 @@ export async function deleteGitHubProjectInDb(projectId: string) {
   const projectRef = doc(db, 'github_projects', projectId);
   return await deleteDoc(projectRef);
 }
+
+// ================= SEED DEMO USERS ================= //
+export async function seedDemoUsersInDb() {
+  const demoUsers = [
+    {
+      id: 'conectabot-ia',
+      name: 'ConectaBot IA 🤖',
+      username: 'conectabot',
+      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=conectabot&backgroundColor=1877f2',
+      coverImage: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=1000&auto=format&fit=crop&q=80',
+      bio: 'Assistente Inteligente ConectaFlow. Envie uma mensagem ou inicie uma chamada de teste!',
+      isOnline: true,
+      lastSeen: 'Online agora',
+      location: 'ConectaFlow Cloud',
+      work: 'Assistente do Sistema',
+      friendsCount: 120,
+    },
+    {
+      id: 'demo-ana-costa',
+      name: 'Ana Costa',
+      username: 'ana.costa',
+      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=ana-costa&backgroundColor=1877f2',
+      coverImage: 'https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=1000&auto=format&fit=crop&q=80',
+      bio: 'Desenvolvedora Frontend & Designer de Interfaces. Amante de React e Tailwind.',
+      isOnline: true,
+      lastSeen: 'Online agora',
+      location: 'São Paulo, Brasil',
+      work: 'UI/UX Designer',
+      friendsCount: 45,
+    },
+    {
+      id: 'demo-bruno-silveira',
+      name: 'Bruno Silveira',
+      username: 'bruno.dev',
+      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=bruno-silveira&backgroundColor=1877f2',
+      coverImage: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=1000&auto=format&fit=crop&q=80',
+      bio: 'Criador do projeto Portfólio Dev 3D no Hub github.io do ConectaFlow.',
+      isOnline: true,
+      lastSeen: 'Online agora',
+      location: 'Florianópolis, Brasil',
+      work: 'Engenheiro Full-Stack',
+      friendsCount: 88,
+    },
+  ];
+
+  for (const user of demoUsers) {
+    const userRef = doc(db, 'users', user.id);
+    await setDoc(userRef, user, { merge: true });
+  }
+}
+
