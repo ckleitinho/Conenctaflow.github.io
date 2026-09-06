@@ -128,7 +128,34 @@ export interface CallState {
   isMinimized: boolean;
 }
 
-export type ActiveTab = 'feed' | 'groups' | 'messages' | 'videos';
+export type ActiveTab = 'feed' | 'groups' | 'messages' | 'videos' | 'github_io';
+
+export type GitHubCategory = 
+  | 'Portfólio' 
+  | 'Documentação' 
+  | 'Ferramentas' 
+  | 'Jogos' 
+  | 'Landing Page' 
+  | 'Outros';
+
+export interface GitHubProject {
+  id: string;
+  title: string;
+  url: string;
+  repoUrl?: string;
+  description: string;
+  category: GitHubCategory;
+  tags: string[];
+  authorId: string;
+  authorName: string;
+  authorAvatar: string;
+  starsCount: number;
+  likesCount: number;
+  likedBy?: string[];
+  previewImage?: string;
+  createdAt: number;
+  isFeatured?: boolean;
+}
 
 export type NotificationType = 
   | 'like' 

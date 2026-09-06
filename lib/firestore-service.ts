@@ -13,7 +13,7 @@ import {
   serverTimestamp 
 } from 'firebase/firestore';
 import { db } from './firebase';
-import { Post, Friend, Group, Story, Message, ReactionType, Comment, AppNotification, ReportItem } from './types';
+import { Post, Friend, Group, Story, Message, ReactionType, Comment, AppNotification, ReportItem, GitHubProject } from './types';
 
 // Helper to remove any undefined fields before sending to Firestore
 export function removeUndefinedFields<T extends Record<string, any>>(obj: T): T {
@@ -479,4 +479,66 @@ export function subscribeUserReports(
   }, (error) => {
     console.warn('Reports subscription error:', error);
   });
+}
+
+// ================= GITHUB.IO PROJECTS ================= //
+export function subscribeGitHubProjects(onProjectsUpdate: (projects: GitHubProject[]) => void) {
+  const projectsRef = collection(db, 'github_projects');
+  const q = query(projectsRef, limit(100));
+
+  return onSnapshot(q, (snapshot) => {
+    const list: GitHubProject[] = [];
+    snapshot.forEach((docSnap) => {
+      const data = docSnap.data();
+      list.push({
+        id: docSnap.id,
+        title: data.title || 'Projeto GitHub.io',
+        url: data.url || '',
+        repoUrl: data.repoUrl || '',
+        description: data.description || '',
+        category: data.category || 'Portfólio',
+        tags: data.tags || [],
+        authorId: data.authorId || '',
+        authorName: data.authorName || 'Dev',
+        authorAvatar: data.authorAvatar || 'https://api.dicebear.com/7.x/bottts/svg?seed=dev',
+        starsCount: data.starsCount || 0,
+        likesCount: data.likesCount || 0,
+        likedBy: data.likedBy || [],
+        previewImage: data.previewImage || '',
+        createdAt: data.createdAt || Date.now(),
+        isFeatured: Boolean(data.isFeatured),
+      });
+    });
+
+    list.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    onProjectsUpdate(list);
+  }, (error) => {
+    console.warn('GitHub projects subscription error:', error);
+  });
+}
+
+export async function createGitHubProjectInDb(project: Omit<GitHubProject, 'id'>) {
+  const projectsRef = collection(db, 'github_projects');
+  return await addDoc(projectsRef, removeUndefinedFields({
+    ...project,
+    likedBy: project.likedBy || [],
+    createdAt: Date.now(),
+  }));
+}
+
+export async function toggleLikeGitHubProjectInDb(projectId: string, userId: string, currentLikedBy: string[] = [], currentLikesCount: number = 0) {
+  const projectRef = doc(db, 'github_projects', projectId);
+  const hasLiked = currentLikedBy.includes(userId);
+  const newLikedBy = hasLiked ? currentLikedBy.filter((id) => id !== userId) : [...currentLikedBy, userId];
+  const newLikesCount = hasLiked ? Math.max(0, currentLikesCount - 1) : currentLikesCount + 1;
+
+  return await updateDoc(projectRef, {
+    likedBy: newLikedBy,
+    likesCount: newLikesCount,
+  });
+}
+
+export async function deleteGitHubProjectInDb(projectId: string) {
+  const projectRef = doc(db, 'github_projects', projectId);
+  return await deleteDoc(projectRef);
 }

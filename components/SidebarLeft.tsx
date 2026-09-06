@@ -13,7 +13,9 @@ import {
   Compass,
   Tv,
   HelpCircle,
-  ExternalLink
+  ExternalLink,
+  Github,
+  Globe
 } from 'lucide-react';
 import { ActiveTab, User, Group } from '@/lib/types';
 
@@ -114,6 +116,23 @@ export const SidebarLeft: React.FC<SidebarLeftProps> = ({
         >
           <MessageCircle className="w-5 h-5 text-[#A033FF]" />
           <span className="text-sm">Chats Privados</span>
+        </button>
+
+        <button
+          onClick={() => setActiveTab('github_io')}
+          className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-left cursor-pointer transition-colors ${
+            activeTab === 'github_io'
+              ? 'bg-[#E7F3FF] text-[#1877F2] font-semibold'
+              : 'text-[#050505] hover:bg-[#E4E6EB]/60'
+          }`}
+        >
+          <div className="flex items-center gap-3.5">
+            <Github className="w-5 h-5 text-[#0D1117]" />
+            <span className="text-sm">Projetos github.io</span>
+          </div>
+          <span className="bg-[#0D1117] text-white text-[10px] font-bold px-1.5 py-0.5 rounded-md font-mono">
+            .io
+          </span>
         </button>
 
         {/* Action card for instant video call */}

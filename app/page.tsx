@@ -16,8 +16,12 @@ import {
   Comment
 } from '@/lib/types';
 import { 
-  INITIAL_GROUPS 
+  INITIAL_GROUPS,
+  INITIAL_GITHUB_PROJECTS
 } from '@/lib/initial-data';
+import { 
+  GitHubProject 
+} from '@/lib/types';
 import { 
   auth, 
   onAuthStateChanged, 
@@ -46,7 +50,11 @@ import {
   markAllNotificationsAsReadInDb,
   deleteNotificationInDb,
   createReportInDb,
-  subscribeUserReports
+  subscribeUserReports,
+  subscribeGitHubProjects,
+  createGitHubProjectInDb,
+  toggleLikeGitHubProjectInDb,
+  deleteGitHubProjectInDb
 } from '@/lib/firestore-service';
 import { AuthScreen } from '@/components/AuthScreen';
 import { EditProfileModal } from '@/components/EditProfileModal';
@@ -59,6 +67,7 @@ import { PostCard } from '@/components/PostCard';
 import { ChatView } from '@/components/ChatView';
 import { GroupsView } from '@/components/GroupsView';
 import { VideoHubView } from '@/components/VideoHubView';
+import { GitHubPagesView } from '@/components/GitHubPagesView';
 import { VideoCallModal } from '@/components/VideoCallModal';
 import { FloatingChatWindow } from '@/components/FloatingChatWindow';
 import { ReportModal } from '@/components/ReportModal';
@@ -82,6 +91,7 @@ export default function ConectaFlowHome() {
   const [notifications, setNotifications] = useState<AppNotification[]>([]);
   const [userReports, setUserReports] = useState<ReportItem[]>([]);
   const [hiddenPostIds, setHiddenPostIds] = useState<string[]>([]);
+  const [githubProjects, setGithubProjects] = useState<GitHubProject[]>(INITIAL_GITHUB_PROJECTS);
 
   // UI Filters & Modals
   const [searchQuery, setSearchQuery] = useState('');
@@ -218,6 +228,15 @@ export default function ConectaFlowHome() {
       setUserReports(liveReports);
     });
 
+    // Subscribe to Real-Time GitHub.io Projects
+    const unsubGH = subscribeGitHubProjects((liveProjects) => {
+      if (liveProjects.length > 0) {
+        setGithubProjects(liveProjects);
+      } else {
+        setGithubProjects(INITIAL_GITHUB_PROJECTS);
+      }
+    });
+
     return () => {
       unsubPosts();
       unsubStories();
@@ -226,6 +245,7 @@ export default function ConectaFlowHome() {
       unsubMessages();
       unsubNotifs();
       unsubReports();
+      unsubGH();
     };
   }, [currentUser?.id]);
 
@@ -712,6 +732,77 @@ export default function ConectaFlowHome() {
     }
   };
 
+  // ================= GITHUB.IO HANDLERS ================= //
+  const handleCreateGitHubProject = async (
+    project: Omit<GitHubProject, 'id'>,
+    shareToFeed?: boolean
+  ) => {
+    try {
+      await createGitHubProjectInDb(project);
+    } catch (err) {
+      console.warn('Error creating GitHub project in Firestore, using optimistic update:', err);
+      const tempProj: GitHubProject = { ...project, id: `gh-${Date.now()}` };
+      setGithubProjects((prev) => [tempProj, ...prev]);
+    }
+
+    if (shareToFeed && currentUser) {
+      handlePublishPost({
+        content: `🚀 Novo projeto publicado no Hub github.io!\n\n📌 **${project.title}**\n${project.description}\n\n🌐 Acesse ao vivo: ${project.url}${project.repoUrl ? `\n💻 Código no GitHub: ${project.repoUrl}` : ''}`,
+        image: project.previewImage,
+        privacy: 'public',
+      });
+    }
+  };
+
+  const handleLikeGitHubProject = async (projectId: string) => {
+    if (!currentUser) return;
+    const target = githubProjects.find((p) => p.id === projectId);
+    if (!target) return;
+
+    try {
+      await toggleLikeGitHubProjectInDb(
+        projectId,
+        currentUser.id,
+        target.likedBy || [],
+        target.likesCount || 0
+      );
+    } catch (err) {
+      console.warn('Error liking GitHub project in Firestore:', err);
+      setGithubProjects((prev) =>
+        prev.map((p) => {
+          if (p.id !== projectId) return p;
+          const hasLiked = p.likedBy?.includes(currentUser.id);
+          const newLikedBy = hasLiked
+            ? (p.likedBy || []).filter((id) => id !== currentUser.id)
+            : [...(p.likedBy || []), currentUser.id];
+          return {
+            ...p,
+            likedBy: newLikedBy,
+            likesCount: hasLiked ? Math.max(0, (p.likesCount || 0) - 1) : (p.likesCount || 0) + 1,
+          };
+        })
+      );
+    }
+  };
+
+  const handleDeleteGitHubProject = async (projectId: string) => {
+    try {
+      await deleteGitHubProjectInDb(projectId);
+    } catch (err) {
+      console.warn('Error deleting GitHub project from Firestore:', err);
+      setGithubProjects((prev) => prev.filter((p) => p.id !== projectId));
+    }
+  };
+
+  const handleShareGitHubProjectToFeed = (project: GitHubProject) => {
+    if (!currentUser) return;
+    handlePublishPost({
+      content: `💡 Confira este projeto hospedado no github.io!\n\n📌 **${project.title}**\n${project.description}\n\n🌐 Veja ao vivo: ${project.url}${project.repoUrl ? `\n💻 Repositório: ${project.repoUrl}` : ''}`,
+      image: project.previewImage,
+      privacy: 'public',
+    });
+  };
+
   // Open floating chat
   const handleOpenChatWithFriend = (friend: Friend) => {
     setFloatingChatFriend(friend);
@@ -808,7 +899,7 @@ export default function ConectaFlowHome() {
         />
 
         {/* Center Main Stage */}
-        <main className="flex-1 max-w-2xl min-w-0 w-full">
+        <main className={activeTab === 'github_io' ? 'flex-1 max-w-5xl min-w-0 w-full' : 'flex-1 max-w-2xl min-w-0 w-full'}>
           {/* 1. FEED VIEW */}
           {activeTab === 'feed' && (
             <div className="space-y-3 pb-16">
@@ -943,6 +1034,18 @@ export default function ConectaFlowHome() {
               onStartCallWithFriend={handleStartCallWithFriend}
               onStartInstantRoom={handleStartInstantRoom}
               onStartGroupCall={handleStartGroupCall}
+            />
+          )}
+
+          {/* 5. GITHUB.IO SHOWCASE HUB */}
+          {activeTab === 'github_io' && (
+            <GitHubPagesView
+              currentUser={currentUser}
+              projects={githubProjects}
+              onCreateProject={handleCreateGitHubProject}
+              onLikeProject={handleLikeGitHubProject}
+              onDeleteProject={handleDeleteGitHubProject}
+              onShareToFeed={handleShareGitHubProjectToFeed}
             />
           )}
         </main>

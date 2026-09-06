@@ -24,7 +24,9 @@ import {
   Settings,
   Volume2,
   VolumeX,
-  Radio
+  Radio,
+  Github,
+  Globe
 } from 'lucide-react';
 import { ActiveTab, User, Friend, AppNotification } from '@/lib/types';
 
@@ -224,6 +226,28 @@ export const Navbar: React.FC<NavbarProps> = ({
             </span>
           </div>
           {activeTab === 'videos' && (
+            <span className="absolute bottom-0 inset-x-0 h-1 bg-[#1877F2] rounded-t-md" />
+          )}
+        </button>
+
+        {/* GitHub.io Tab */}
+        <button
+          id="nav-tab-github-io"
+          onClick={() => setActiveTab('github_io')}
+          className={`relative h-full flex-1 max-w-28 flex flex-col items-center justify-center transition-all cursor-pointer ${
+            activeTab === 'github_io'
+              ? 'text-[#1877F2] font-semibold'
+              : 'text-[#65676B] hover:bg-[#F2F2F2] rounded-lg'
+          }`}
+          title="Hub de Projetos GitHub.io"
+        >
+          <div className="relative flex items-center">
+            <Github className={`w-6 h-6 ${activeTab === 'github_io' ? 'stroke-[2.5] text-[#1877F2]' : 'text-gray-700'}`} />
+            <span className="absolute -top-1 -right-2 bg-[#0D1117] text-white text-[9px] font-mono px-1 rounded font-bold">
+              .io
+            </span>
+          </div>
+          {activeTab === 'github_io' && (
             <span className="absolute bottom-0 inset-x-0 h-1 bg-[#1877F2] rounded-t-md" />
           )}
         </button>
