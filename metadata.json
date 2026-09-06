@@ -1,0 +1,11 @@
+{
+  "name": "ConectaFlow",
+  "description": "Rede social completa com feed dinâmico, grupos, mensagens privadas e chamadas de vídeo em tempo real.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone"
+  ],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "schema": {
+    "users": {
+      "description": "Perfis dos usuários reais registrados via Google ou Anônimo",
+      "fields": {
+        "id": { "type": "string", "description": "UID do usuário" },
+        "name": { "type": "string", "description": "Nome de exibição" },
+        "email": { "type": "string", "description": "Email do usuário (se fornecido)", "optional": true },
+        "avatar": { "type": "string", "description": "URL da foto de perfil" },
+        "isOnline": { "type": "boolean", "description": "Status de presença online" },
+        "lastSeen": { "type": "string", "description": "Horário da última atividade", "optional": true },
+        "bio": { "type": "string", "description": "Biografia curta", "optional": true },
+        "isAnonymous": { "type": "boolean", "description": "Indica se o login é anônimo" },
+        "createdAt": { "type": "timestamp", "description": "Data de cadastro" }
+      }
+    },
+    "posts": {
+      "description": "Publicações do feed",
+      "fields": {
+        "id": { "type": "string", "description": "ID único do post" },
+        "authorId": { "type": "string", "description": "UID do autor" },
+        "authorName": { "type": "string", "description": "Nome do autor" },
+        "authorAvatar": { "type": "string", "description": "Avatar do autor" },
+        "content": { "type": "string", "description": "Texto do post" },
+        "image": { "type": "string", "description": "URL de imagem opcional", "optional": true },
+        "feeling": { "type": "string", "description": "Sentimento associado", "optional": true },
+        "location": { "type": "string", "description": "Localização", "optional": true },
+        "privacy": { "type": "string", "description": "public | friends | only_me" },
+        "reactions": { "type": "map", "description": "Contador de reações: like, love, haha, wow, sad, angry" },
+        "comments": { "type": "array", "description": "Lista de comentários estruturados" },
+        "sharesCount": { "type": "number", "description": "Contagem de compartilhamentos" },
+        "groupId": { "type": "string", "description": "ID do grupo se postado em grupo", "optional": true },
+        "groupName": { "type": "string", "description": "Nome do grupo se postado em grupo", "optional": true },
+        "createdAt": { "type": "number", "description": "Timestamp de criação" }
+      }
+    },
+    "groups": {
+      "description": "Comunidades e grupos criados por usuários reais",
+      "fields": {
+        "id": { "type": "string", "description": "ID único do grupo" },
+        "name": { "type": "string", "description": "Nome do grupo" },
+        "tagline": { "type": "string", "description": "Slogan curto" },
+        "description": { "type": "string", "description": "Descrição da comunidade" },
+        "category": { "type": "string", "description": "Categoria do grupo" },
+        "coverImage": { "type": "string", "description": "URL da imagem de capa" },
+        "avatar": { "type": "string", "description": "Ícone/avatar do grupo" },
+        "memberCount": { "type": "number", "description": "Quantidade de membros" },
+        "members": { "type": "array", "description": "Lista de UIDs dos membros" },
+        "privacy": { "type": "string", "description": "Público ou Privado" },
+        "rules": { "type": "array", "description": "Regras da comunidade", "optional": true },
+        "createdBy": { "type": "string", "description": "UID do criador" },
+        "createdAt": { "type": "number", "description": "Timestamp de criação" }
+      }
+    },
+    "stories": {
+      "description": "Stories efêmeros de usuários",
+      "fields": {
+        "id": { "type": "string", "description": "ID único do story" },
+        "userId": { "type": "string", "description": "UID do autor" },
+        "userName": { "type": "string", "description": "Nome do autor" },
+        "userAvatar": { "type": "string", "description": "Avatar do autor" },
+        "mediaUrl": { "type": "string", "description": "URL da imagem/mídia" },
+        "caption": { "type": "string", "description": "Legenda do story", "optional": true },
+        "createdAt": { "type": "number", "description": "Timestamp de criação" }
+      }
+    },
+    "messages": {
+      "description": "Mensagens de bate-papo em tempo real entre usuários",
+      "fields": {
+        "id": { "type": "string", "description": "ID da mensagem" },
+        "chatId": { "type": "string", "description": "ID da conversa ordenado (uid1_uid2)" },
+        "senderId": { "type": "string", "description": "UID do remetente" },
+        "receiverId": { "type": "string", "description": "UID do destinatário" },
+        "text": { "type": "string", "description": "Conteúdo textual" },
+        "timestamp": { "type": "string", "description": "Horário formatado" },
+        "createdAt": { "type": "number", "description": "Timestamp numérico para ordenação" },
+        "isRead": { "type": "boolean", "description": "Status de leitura" }
+      }
+    }
+  },
+  "roles": {
+    "user": "Usuário autenticado (Google ou Anônimo)"
+  }
+}

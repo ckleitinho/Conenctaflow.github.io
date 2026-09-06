@@ -1,0 +1,62 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // Regras de Usuários
+    match /users/{userId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Regras de Posts
+    match /posts/{postId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.authorId == request.auth.uid;
+      allow update: if request.auth != null;
+      allow delete: if request.auth != null && resource.data.authorId == request.auth.uid;
+    }
+
+    // Regras de Grupos
+    match /groups/{groupId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null;
+      allow update: if request.auth != null;
+      allow delete: if request.auth != null && resource.data.createdBy == request.auth.uid;
+    }
+
+    // Regras de Stories
+    match /stories/{storyId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.userId == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.userId == request.auth.uid;
+    }
+
+    // Regras de Mensagens
+    match /messages/{messageId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.senderId == request.auth.uid;
+      allow update: if request.auth != null && (resource.data.senderId == request.auth.uid || resource.data.receiverId == request.auth.uid);
+      allow delete: if request.auth != null && resource.data.senderId == request.auth.uid;
+    }
+
+    // Regras de Notificações
+    match /notifications/{notificationId} {
+      allow read: if request.auth != null && (resource.data.recipientId == request.auth.uid || resource.data.userId == request.auth.uid);
+      allow create: if request.auth != null;
+      allow update: if request.auth != null && (resource.data.recipientId == request.auth.uid || resource.data.userId == request.auth.uid);
+      allow delete: if request.auth != null && (resource.data.recipientId == request.auth.uid || resource.data.userId == request.auth.uid);
+    }
+
+    // Regras de Denúncias (Reports)
+    match /reports/{reportId} {
+      allow read: if request.auth != null;
+      allow create: if request.auth != null && request.resource.data.reporterId == request.auth.uid;
+      allow update, delete: if request.auth != null && resource.data.reporterId == request.auth.uid;
+    }
+
+    // Teste de Conexão
+    match /test/{docId} {
+      allow read: if true;
+    }
+  }
+}
