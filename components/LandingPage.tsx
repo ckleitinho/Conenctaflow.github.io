@@ -682,7 +682,7 @@ export const LandingPage: React.FC = () => {
                 <li><a href="#recursos" className="hover:text-white transition-colors">Recursos</a></li>
                 <li><a href="#demo" className="hover:text-white transition-colors">Demonstração</a></li>
                 <li><a href="#beneficios" className="hover:text-white transition-colors">Benefícios</a></li>
-                <li><a href="#github-io" className="hover:text-white transition-colors">Hub github.io</a></li>
+                <li><Link href="/github-io" className="hover:text-white transition-colors">Hub github.io</Link></li>
                 <li><a href="#depoimentos" className="hover:text-white transition-colors">Depoimentos</a></li>
               </ul>
             </div>

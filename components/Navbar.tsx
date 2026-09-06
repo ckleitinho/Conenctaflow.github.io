@@ -708,6 +708,14 @@ export const Navbar: React.FC<NavbarProps> = ({
                   <Users className="w-4 h-4 text-[#65676B]" />
                   <span>Minhas Comunidades & Grupos</span>
                 </button>
+                <Link
+                  href="/github-io"
+                  onClick={() => setShowUserMenu(false)}
+                  className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-[#F2F2F2] rounded-lg text-left cursor-pointer text-slate-800 font-semibold"
+                >
+                  <Github className="w-4 h-4 text-[#0D1117]" />
+                  <span>Página Dedicada Hub github.io</span>
+                </Link>
 
                 {onOpenReportsHistory && (
                   <button
