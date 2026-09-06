@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { 
   Search, 
   Home, 
@@ -670,6 +671,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <span>Editar Meu Perfil</span>
                   </button>
                 )}
+                <Link
+                  href="/"
+                  className="w-full flex items-center gap-2.5 px-3 py-2 hover:bg-[#F2F2F2] rounded-lg text-left cursor-pointer text-[#1877F2] font-semibold"
+                >
+                  <Globe className="w-4 h-4 text-[#1877F2]" />
+                  <span>Página Inicial / Landing Page</span>
+                </Link>
                 <button
                   onClick={() => {
                     setActiveTab('feed');
