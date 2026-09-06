@@ -60,13 +60,13 @@ export const LandingHeader: React.FC = () => {
           >
             Benefícios
           </a>
-          <a
-            href="#github-io"
+          <Link
+            href="/github-io"
             className="hover:text-[#1877F2] transition-colors py-1 flex items-center gap-1.5 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#1877F2] hover:after:w-full after:transition-all"
           >
             <Github className="w-4 h-4 text-slate-800" />
             <span>Hub github.io</span>
-          </a>
+          </Link>
           <a
             href="#depoimentos"
             className="hover:text-[#1877F2] transition-colors py-1 relative after:absolute after:bottom-0 after:left-0 after:w-0 after:h-0.5 after:bg-[#1877F2] hover:after:w-full after:transition-all"
@@ -126,13 +126,13 @@ export const LandingHeader: React.FC = () => {
           >
             Benefícios
           </a>
-          <a
-            href="#github-io"
+          <Link
+            href="/github-io"
             onClick={() => setMobileMenuOpen(false)}
             className="block px-3 py-2 rounded-lg text-base font-medium text-slate-700 hover:bg-slate-50"
           >
             Hub github.io
-          </a>
+          </Link>
           <a
             href="#depoimentos"
             onClick={() => setMobileMenuOpen(false)}
